@@ -1,0 +1,52 @@
+[
+  {
+    "id": "room_plus",
+    "name": "客室増設",
+    "icon": "🛏️",
+    "category": "base",
+    "cost": 60,
+    "cost_growth": 1.6,
+    "effects": { "guest_capacity": 1 },
+    "max_level": 12
+  },
+  {
+    "id": "bedding",
+    "name": "寝具改善",
+    "icon": "🛌",
+    "category": "base",
+    "cost": 40,
+    "cost_growth": 1.5,
+    "effects": { "comfort": 1 },
+    "max_level": 10
+  },
+  {
+    "id": "kitchen",
+    "name": "厨房強化",
+    "icon": "🍲",
+    "category": "base",
+    "cost": 45,
+    "cost_growth": 1.5,
+    "effects": { "food": 1 },
+    "max_level": 10
+  },
+  {
+    "id": "cleaning_gear",
+    "name": "清掃用具",
+    "icon": "🧹",
+    "category": "base",
+    "cost": 35,
+    "cost_growth": 1.45,
+    "effects": { "cleanliness": 1 },
+    "max_level": 10
+  },
+  {
+    "id": "fireplace",
+    "name": "暖炉",
+    "icon": "🔥",
+    "category": "interior",
+    "cost": 80,
+    "cost_growth": 1.6,
+    "effects": { "comfort": 1 },
+    "max_level": 5
+  }
+]

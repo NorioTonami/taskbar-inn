@@ -1,0 +1,58 @@
+[
+  {
+    "id": "player_cleaning",
+    "name": "掃除道具（自分用）",
+    "icon": "🧴",
+    "skill": "cleaning",
+    "track": "player",
+    "tiers": [
+      { "level": 0, "name": "素手", "bonus": 0, "cost": 0 },
+      { "level": 1, "name": "ほうき", "bonus": 1, "cost": 50 },
+      { "level": 2, "name": "モップ", "bonus": 2, "cost": 150 },
+      { "level": 3, "name": "高圧洗浄機", "bonus": 3, "cost": 400 },
+      { "level": 4, "name": "業務用クリーナー", "bonus": 4, "cost": 1000 }
+    ]
+  },
+  {
+    "id": "staff_cleaning",
+    "name": "清掃カート（スタッフ共用）",
+    "icon": "🛒",
+    "skill": "cleaning",
+    "track": "staff",
+    "tiers": [
+      { "level": 0, "name": "なし", "bonus": 0, "cost": 0 },
+      { "level": 1, "name": "簡易カート", "bonus": 1, "cost": 120 },
+      { "level": 2, "name": "清掃カート", "bonus": 2, "cost": 350 },
+      { "level": 3, "name": "電動カート", "bonus": 3, "cost": 900 },
+      { "level": 4, "name": "全自動清掃機", "bonus": 4, "cost": 2200 }
+    ]
+  },
+  {
+    "id": "player_cooking",
+    "name": "調理器具（自分用）",
+    "icon": "🔪",
+    "skill": "cooking",
+    "track": "player",
+    "tiers": [
+      { "level": 0, "name": "素朴な包丁", "bonus": 0, "cost": 0 },
+      { "level": 1, "name": "良い包丁", "bonus": 1, "cost": 80 },
+      { "level": 2, "name": "鋳鉄鍋", "bonus": 2, "cost": 220 },
+      { "level": 3, "name": "石窯", "bonus": 3, "cost": 600 },
+      { "level": 4, "name": "プロ厨房一式", "bonus": 4, "cost": 1500 }
+    ]
+  },
+  {
+    "id": "staff_cooking",
+    "name": "厨房設備（スタッフ共用）",
+    "icon": "🍴",
+    "skill": "cooking",
+    "track": "staff",
+    "tiers": [
+      { "level": 0, "name": "なし", "bonus": 0, "cost": 0 },
+      { "level": 1, "name": "作業台", "bonus": 1, "cost": 180 },
+      { "level": 2, "name": "業務用コンロ", "bonus": 2, "cost": 500 },
+      { "level": 3, "name": "大型オーブン", "bonus": 3, "cost": 1300 },
+      { "level": 4, "name": "全自動調理機", "bonus": 4, "cost": 3000 }
+    ]
+  }
+]

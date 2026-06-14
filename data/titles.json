@@ -1,0 +1,28 @@
+[
+  {
+    "id": "clean_master",
+    "name": "清掃の達人",
+    "icon": "🧼",
+    "conditions": [
+      { "field": "skill.cleaning", "op": ">=", "value": 10 }
+    ]
+  },
+  {
+    "id": "well_staffed",
+    "name": "頼れる奉公人たち",
+    "icon": "👥",
+    "conditions": [
+      { "field": "staff_count", "op": ">=", "value": 3 },
+      { "field": "reputation", "op": ">=", "value": 20 }
+    ]
+  },
+  {
+    "id": "popular_inn",
+    "name": "街道の人気宿",
+    "icon": "🛤️",
+    "conditions": [
+      { "field": "reputation", "op": ">=", "value": 40 },
+      { "field": "total_guests", "op": ">=", "value": 100 }
+    ]
+  }
+]

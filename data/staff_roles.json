@@ -1,0 +1,34 @@
+[
+  {
+    "role_id": "cleaner",
+    "name": "清掃係",
+    "icon": "🧽",
+    "skill": "cleaning",
+    "base_auto_effect": 1,
+    "effect_per_level": 1,
+    "cooldown_sec": 6,
+    "hire_cost": 80,
+    "cost_growth": 1.7,
+    "reputation_req": 0,
+    "tier_req": 1,
+    "xp_per_action": 3,
+    "xp_base": 10,
+    "xp_growth": 1.4
+  },
+  {
+    "role_id": "cook",
+    "name": "料理人",
+    "icon": "👨‍🍳",
+    "skill": "cooking",
+    "base_auto_effect": 2,
+    "effect_per_level": 1,
+    "cooldown_sec": 6,
+    "hire_cost": 150,
+    "cost_growth": 1.7,
+    "reputation_req": 10,
+    "tier_req": 2,
+    "xp_per_action": 3,
+    "xp_base": 10,
+    "xp_growth": 1.4
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "first_guest",
+    "name": "はじめてのお客",
+    "icon": "🎉",
+    "conditions": [{ "field": "total_guests", "op": ">=", "value": 1 }]
+  },
+  {
+    "id": "five_guests",
+    "name": "常連の予感",
+    "icon": "🖐️",
+    "conditions": [{ "field": "total_guests", "op": ">=", "value": 5 }]
+  },
+  {
+    "id": "full_house",
+    "name": "満室の夜",
+    "icon": "🏨",
+    "conditions": [{ "field": "guest_count", "op": ">=", "value": "guest_capacity" }]
+  },
+  {
+    "id": "first_staff",
+    "name": "はじめての奉公人",
+    "icon": "🧽",
+    "conditions": [{ "field": "staff_count", "op": ">=", "value": 1 }]
+  },
+  {
+    "id": "clean_hands",
+    "name": "掃除のコツ",
+    "icon": "🧹",
+    "conditions": [{ "field": "skill.cleaning", "op": ">=", "value": 5 }]
+  },
+  {
+    "id": "spotless",
+    "name": "塵ひとつない宿",
+    "icon": "✨",
+    "conditions": [{ "field": "cleanliness", "op": ">=", "value": 5 }]
+  },
+  {
+    "id": "talk_of_town",
+    "name": "町で噂の宿",
+    "icon": "📣",
+    "conditions": [{ "field": "reputation", "op": ">=", "value": 30 }]
+  },
+  {
+    "id": "merchant_favorite",
+    "name": "商人のお気に入り",
+    "icon": "💰",
+    "conditions": [{ "field": "guest_type_counts.merchant", "op": ">=", "value": 10 }]
+  }
+]

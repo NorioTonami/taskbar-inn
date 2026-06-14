@@ -1,0 +1,64 @@
+[
+  {
+    "id": "guest_overnight",
+    "type": "guest",
+    "text": "旅人が一晩泊まっていきました",
+    "effects": { "gold": 8 },
+    "weight": 30
+  },
+  {
+    "id": "clean_praise",
+    "type": "positive",
+    "text": "清掃が行き届いていて評判が上がりました",
+    "effects": { "reputation": 1 },
+    "weight": 18,
+    "cond": { "stat": "cleanliness", "op": ">=", "value": 3 }
+  },
+  {
+    "id": "breakfast_praise",
+    "type": "positive",
+    "text": "朝食を気に入った客がいたようです",
+    "effects": { "reputation": 1 },
+    "weight": 16,
+    "cond": { "stat": "food", "op": ">=", "value": 3 }
+  },
+  {
+    "id": "old_bedding",
+    "type": "minor_negative",
+    "text": "寝具が古く、少し評価が下がりました",
+    "effects": { "reputation": -1 },
+    "weight": 12,
+    "cond": { "stat": "comfort", "op": "<=", "value": 1 }
+  },
+  {
+    "id": "dirty_complaint",
+    "type": "minor_negative",
+    "text": "部屋が汚れていると苦情が出ました",
+    "effects": { "reputation": -1 },
+    "weight": 16,
+    "cond": { "stat": "dirtiness", "op": ">=", "value": 30 }
+  },
+  {
+    "id": "good_reputation_word",
+    "type": "positive",
+    "text": "町で評判を聞いた客がやってきました",
+    "effects": { "guest_count": 1 },
+    "weight": 12,
+    "cond": { "stat": "reputation", "op": ">=", "value": 15 }
+  },
+  {
+    "id": "fireplace_cozy",
+    "type": "positive",
+    "text": "暖炉の灯りが心地よいと評判です",
+    "effects": { "reputation": 1 },
+    "weight": 10,
+    "cond": { "has_upgrade": "fireplace" }
+  },
+  {
+    "id": "quiet_night",
+    "type": "minor_negative",
+    "text": "静かな夜で、客足がまばらでした",
+    "effects": {},
+    "weight": 10
+  }
+]

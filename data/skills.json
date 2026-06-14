@@ -1,0 +1,30 @@
+[
+  {
+    "id": "cleaning",
+    "name": "清掃",
+    "icon": "🧹",
+    "target": "meter",
+    "affects": "dirtiness",
+    "base_effect": 2,
+    "effect_per_level": 1,
+    "cooldown_sec": 5,
+    "xp_per_action": 4,
+    "xp_base": 10,
+    "xp_growth": 1.35,
+    "tier_req": 1
+  },
+  {
+    "id": "cooking",
+    "name": "仕込み",
+    "icon": "🍳",
+    "target": "stock",
+    "affects": "food_stock",
+    "base_effect": 3,
+    "effect_per_level": 1,
+    "cooldown_sec": 5,
+    "xp_per_action": 4,
+    "xp_base": 10,
+    "xp_growth": 1.35,
+    "tier_req": 2
+  }
+]

@@ -2,6 +2,7 @@ class_name CondEval
 extends RefCounted
 # cond_eval.gd — badges/titles の conditions 配列を評価する共有ヘルパー。
 # field は state フィールド名、または "guest_type_counts.<id>"。
+# "skill.<id>" / "tool.<id>" / "upgrade.<id>" / "action.<id>" も解決する。
 # value が文字列のとき: op が比較演算なら別フィールド名として解決、
 #                       op が "==" なら文字列リテラルとして比較。
 
@@ -15,6 +16,10 @@ static func _resolve_field(state: GameState, field: String) -> Variant:
 				return state.skill_level(parts[1])
 			"tool":
 				return state.tool_level(parts[1])
+			"upgrade":
+				return state.upgrade_level(parts[1])
+			"action":
+				return state.action_count(parts[1])
 			_:
 				return 0
 	match field:

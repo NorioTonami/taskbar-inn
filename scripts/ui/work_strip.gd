@@ -89,8 +89,12 @@ func on_performed(skill_id: String, effect: int) -> void:
 	var affects: String = str(d.get("affects", ""))
 	if affects == "dirtiness":
 		_feedback.text = "🧹 -%d" % effect
-	elif affects == "food_stock":
+	elif affects == "food_stock" or affects == "meal_stocks":
 		_feedback.text = "🍽️ +%d" % effect
+	elif affects == "vegetable_stock":
+		_feedback.text = "🥕 +%d" % effect
+	elif affects == "generic_ingredient_stock":
+		_feedback.text = "📦 +%d" % effect
 	else:
 		_feedback.text = "+%d" % effect
 	_feedback_t = 1.2

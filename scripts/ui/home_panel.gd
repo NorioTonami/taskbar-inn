@@ -39,6 +39,19 @@ func _status_dashboard(state: GameState) -> void:
 	grid.add_child(_stat_card("累計宿泊", "%d 人" % state.total_guests))
 	grid.add_child(_stat_card("評判", "%d" % state.reputation))
 	grid.add_child(_stat_card("汚れ", "%d / %d" % [int(state.dirtiness), state.dirty_cap()]))
+	if state.service_rank >= 2:
+		grid.add_child(_stat_card("料理在庫", "%d / %d" % [
+			int(state.total_meal_stock()), state.meal_storage_capacity()]))
+		grid.add_child(_stat_card("料理内訳", "簡%d 家%d 定%d" % [
+			int(state.meal_stock("basic")),
+			int(state.meal_stock("standard")),
+			int(state.meal_stock("good")),
+		]))
+	if state.service_rank >= 3:
+		grid.add_child(_stat_card("野菜在庫", "%d / %d" % [
+			int(state.vegetable_stock), state.vegetable_cap()]))
+		grid.add_child(_stat_card("汎用素材", "%d / %d" % [
+			int(state.generic_ingredient_stock), state.generic_ingredient_cap()]))
 
 func _notification_area(state: GameState) -> void:
 	var box := PanelContainer.new()

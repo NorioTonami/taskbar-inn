@@ -24,6 +24,7 @@ var _header: Label
 var _home_panel: HomePanel
 var _upgrade_panel: UpgradePanel
 var _work_panel: WorkPanel
+var _tool_panel: ToolPanel
 var _log_panel: EventLogPanel
 var _badge_panel: BadgePanel
 var _title_panel: TitlePanel
@@ -98,6 +99,7 @@ func _ready() -> void:
 	sidebar.add_child(_menu_button(group, "home", "🏠 ホーム"))
 	sidebar.add_child(_menu_button(group, "upgrades", "🧱 設備"))
 	sidebar.add_child(_menu_button(group, "work", "🧹 仕事"))
+	sidebar.add_child(_menu_button(group, "tools", "🧰 道具"))
 	sidebar.add_child(_menu_button(group, "log", "📜 ログ"))
 	sidebar.add_child(_menu_button(group, "achievements", "🏅 実績"))
 	var spacer := Control.new()
@@ -112,6 +114,7 @@ func _ready() -> void:
 	# ホーム
 	var home_scroll := ScrollContainer.new()
 	home_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	home_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_home_panel = HomePanel.new()
 	_home_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_home_panel.setup(_catalog, _tiers)
@@ -122,6 +125,7 @@ func _ready() -> void:
 	# 設備
 	var upgrade_scroll := ScrollContainer.new()
 	upgrade_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	upgrade_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_upgrade_panel = UpgradePanel.new()
 	_upgrade_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_upgrade_panel.buy_requested.connect(func(id): buy_upgrade.emit(id))
@@ -131,6 +135,7 @@ func _ready() -> void:
 	# 仕事
 	var work_scroll := ScrollContainer.new()
 	work_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	work_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_work_panel = WorkPanel.new()
 	_work_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_work_panel.setup(_skills, _staff, _tools, _tiers)
@@ -139,6 +144,17 @@ func _ready() -> void:
 	_work_panel.hire_staff.connect(func(id): hire_staff.emit(id))
 	work_scroll.add_child(_work_panel)
 	_add_page("work", work_scroll)
+
+	# 道具
+	var tool_scroll := ScrollContainer.new()
+	tool_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	tool_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_tool_panel = ToolPanel.new()
+	_tool_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_tool_panel.setup(_skills, _tools)
+	_tool_panel.buy_tool.connect(func(id): buy_tool.emit(id))
+	tool_scroll.add_child(_tool_panel)
+	_add_page("tools", tool_scroll)
 
 	# ログ
 	_log_panel = EventLogPanel.new()
@@ -209,13 +225,14 @@ func refresh(state: GameState) -> void:
 	var tier_name: String = str(_tiers.current(state).get("name", ""))
 	var food_str: String = ""
 	if state.service_rank >= 2:
-		food_str = "  🍽️%d/%d" % [int(state.food_stock), state.food_cap()]
+		food_str = "  🍽️%d/%d" % [int(state.total_meal_stock()), state.meal_storage_capacity()]
 	_header.text = "%s ｜ 💰%d  ⭐%d  🛏️%d/%d  🧹%d/%d%s  Lv%d  作業:%s" % [
 		tier_name, state.gold, state.reputation, state.guest_count, state.guest_capacity,
 		int(state.dirtiness), state.dirty_cap(), food_str, state.level, work_name]
 	_home_panel.populate(state)
 	_upgrade_panel.populate(_catalog, state)
 	_work_panel.populate(state)
+	_tool_panel.populate(state)
 	_log_panel.populate(state)
 	_badge_panel.populate(_badges, state)
 	_title_panel.populate(_titles, state)

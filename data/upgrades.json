@@ -30,6 +30,72 @@
     "max_level": 10
   },
   {
+    "id": "food_storage",
+    "name": "食材保管庫",
+    "icon": "📦",
+    "category": "production",
+    "cost": 70,
+    "cost_growth": 1.55,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 2 }
+    ],
+    "max_level": 8
+  },
+  {
+    "id": "meal_storage",
+    "name": "料理保管庫",
+    "icon": "🍱",
+    "category": "production",
+    "cost": 90,
+    "cost_growth": 1.6,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 2 }
+    ],
+    "max_level": 8
+  },
+  {
+    "id": "refrigerator",
+    "name": "冷蔵庫",
+    "icon": "🧊",
+    "category": "production",
+    "cost": 260,
+    "cost_growth": 1.7,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 3 },
+      { "field": "upgrade.meal_storage", "op": ">=", "value": 2 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "field",
+    "name": "畑",
+    "icon": "🌾",
+    "category": "production",
+    "cost": 160,
+    "cost_growth": 1.65,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 3 }
+    ],
+    "max_level": 8
+  },
+  {
+    "id": "vegetable_storage",
+    "name": "野菜倉庫",
+    "icon": "🥕",
+    "category": "production",
+    "cost": 140,
+    "cost_growth": 1.6,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 3 }
+    ],
+    "max_level": 8
+  },
+  {
     "id": "cleaning_gear",
     "name": "清掃用具",
     "icon": "🧹",
@@ -47,6 +113,136 @@
     "cost": 80,
     "cost_growth": 1.6,
     "effects": { "comfort": 1 },
+    "max_level": 5
+  },
+  {
+    "id": "trading_desk",
+    "name": "商談机",
+    "icon": "📜",
+    "category": "special",
+    "cost": 400,
+    "cost_growth": 1.7,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 4 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "guestbook_counter",
+    "name": "宿帳台",
+    "icon": "📖",
+    "category": "special",
+    "cost": 650,
+    "cost_growth": 1.7,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 5 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "souvenir_shelf",
+    "name": "置き土産棚",
+    "icon": "🎁",
+    "category": "special",
+    "cost": 700,
+    "cost_growth": 1.75,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 5 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "hot_spring_bath",
+    "name": "温泉浴場",
+    "icon": "♨️",
+    "category": "special",
+    "cost": 1400,
+    "cost_growth": 1.8,
+    "effects": { "comfort": 1 },
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 6 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "garden",
+    "name": "庭園",
+    "icon": "🌷",
+    "category": "special",
+    "cost": 2200,
+    "cost_growth": 1.8,
+    "effects": { "comfort": 1 },
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 7 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "bar",
+    "name": "酒場",
+    "icon": "🍺",
+    "category": "special",
+    "cost": 2400,
+    "cost_growth": 1.8,
+    "effects": { "food": 1 },
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 7 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "guard_station",
+    "name": "用心棒詰所",
+    "icon": "🛡️",
+    "category": "special",
+    "cost": 2600,
+    "cost_growth": 1.8,
+    "effects": { "security": 1 },
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 7 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "large_kitchen",
+    "name": "大型厨房",
+    "icon": "🏭",
+    "category": "special",
+    "cost": 5000,
+    "cost_growth": 1.9,
+    "effects": { "food": 2 },
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 8 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "large_warehouse",
+    "name": "大型倉庫",
+    "icon": "🏬",
+    "category": "special",
+    "cost": 5200,
+    "cost_growth": 1.9,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 8 }
+    ],
+    "max_level": 5
+  },
+  {
+    "id": "admin_office",
+    "name": "管理事務所",
+    "icon": "🗂️",
+    "category": "special",
+    "cost": 5600,
+    "cost_growth": 1.9,
+    "effects": {},
+    "unlock": [
+      { "field": "service_rank", "op": ">=", "value": 8 }
+    ],
     "max_level": 5
   }
 ]

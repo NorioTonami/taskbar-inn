@@ -4,6 +4,7 @@
     "name": "一般人",
     "icon": "🧑",
     "base_price_multiplier": 0.9,
+    "required_meal_rank": "basic",
     "requires": {},
     "weight": 50,
     "lines": ["一晩頼むよ", "助かるね", "ふつうでいいんだ"]
@@ -13,6 +14,7 @@
     "name": "旅人",
     "icon": "🧳",
     "base_price_multiplier": 1.0,
+    "required_meal_rank": "basic",
     "requires": {},
     "weight": 40,
     "lines": ["いい宿だ", "今夜はゆっくり休めそうだ", "助かったよ"]
@@ -22,6 +24,7 @@
     "name": "旅商人",
     "icon": "💰",
     "base_price_multiplier": 1.4,
+    "required_meal_rank": "standard",
     "requires": { "comfort": 3 },
     "weight": 20,
     "lines": ["良い取引ができそうだ", "落ち着く部屋だね", "また寄らせてもらうよ"]

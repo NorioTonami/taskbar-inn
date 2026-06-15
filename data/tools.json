@@ -54,5 +54,18 @@
       { "level": 3, "name": "大型オーブン", "bonus": 3, "cost": 1300 },
       { "level": 4, "name": "全自動調理機", "bonus": 4, "cost": 3000 }
     ]
+  },
+  {
+    "id": "player_harvesting",
+    "name": "収穫道具（自分用）",
+    "icon": "🧺",
+    "skill": "harvesting",
+    "track": "player",
+    "tiers": [
+      { "level": 0, "name": "手かご", "bonus": 0, "cost": 0 },
+      { "level": 1, "name": "収穫かご", "bonus": 1, "cost": 120 },
+      { "level": 2, "name": "小さな鎌", "bonus": 2, "cost": 360 },
+      { "level": 3, "name": "畑道具一式", "bonus": 3, "cost": 900 }
+    ]
   }
 ]

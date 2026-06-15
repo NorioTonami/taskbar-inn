@@ -60,10 +60,29 @@ static func _num(v: Variant) -> String:
 
 const FIELD_LABEL := {
 	"total_guests": "累計宿泊客",
+	"total_gold_earned": "累計売上",
 	"food": "料理",
 	"reputation": "評判",
 	"comfort": "快適さ",
 	"cleanliness": "清潔さ",
+	"security": "警備",
+	"skill.cleaning": "清掃Lv",
+	"skill.cooking": "料理Lv",
+	"skill.harvesting": "収穫Lv",
+	"skill.sourcing": "収穫Lv",
+	"skill.spring_development": "温泉開発Lv",
+	"skill.brewing": "醸造Lv",
+	"skill.security_work": "警備作業Lv",
+	"upgrade.room_plus": "客室増設Lv",
+	"upgrade.kitchen": "厨房Lv",
+	"upgrade.food_storage": "食材保管庫Lv",
+	"upgrade.field": "畑Lv",
+	"upgrade.souvenir_shelf": "置き土産棚Lv",
+	"upgrade.hot_spring_bath": "温泉浴場Lv",
+	"upgrade.guard_station": "用心棒詰所Lv",
+	"action.cooking": "料理作業回数",
+	"action.harvesting": "収穫作業回数",
+	"action.sourcing": "収穫作業回数",
 }
 
 static func _label(field: String) -> String:

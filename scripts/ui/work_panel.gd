@@ -1,8 +1,8 @@
 class_name WorkPanel
 extends VBoxContainer
 # work_panel.gd — 「仕事」タブ（v0.3）。HITL の本体。
-# 作業モード（手動スキル）・道具投資・奉公人の雇用/一覧を生成。
-# 解放済み（service_rank に達した）スキル/職/道具のみ表示する。
+# 作業モード（手動スキル）・奉公人の雇用/一覧を生成。
+# 解放済み（service_rank に達した）スキル/職のみ表示する。
 
 signal set_work(skill_id: String)
 signal buy_tool(id: String)
@@ -37,21 +37,13 @@ func populate(state: GameState) -> void:
 	for s in _skills.unlocked_skills(state):
 		var id: String = str(s.get("id", ""))
 		grid.add_child(_work_card(group, str(s.get("icon", "")), str(s.get("name", id)),
-			state.active_work == id, func(): set_work.emit(id)))
-	grid.add_child(_work_card(group, "✋", "手を止める", state.active_work == "",
+			state.active_work == id, func(): set_work.emit(id),
+			not _skills.is_work_available(state, id), _skills.unavailable_reason(state, id)))
+	grid.add_child(_work_card(group, "☕", "休憩", state.active_work == "",
 		func(): set_work.emit("")))
 
 	for s in _skills.unlocked_skills(state):
 		add_child(_skill_detail(state, s))
-
-	add_child(HSeparator.new())
-
-	_header("道具（手動／自動の効率に投資）")
-	for t in _tools.tools:
-		if _skills.is_unlocked(state, str(t.get("skill", ""))):
-			add_child(_tool_row(state, t))
-
-	add_child(HSeparator.new())
 
 	_header("奉公人（配置枠 %d / %d）" % [state.assigned_staff_count(), state.placement_slots])
 	for r in _staff.unlocked_roles(state):
@@ -84,8 +76,21 @@ func _skill_detail(state: GameState, s: Dictionary) -> Control:
 	if affects == "dirtiness":
 		ctx = "汚れ %d/%d" % [int(state.dirtiness), state.dirty_cap()]
 		sign = "-"
-	elif affects == "food_stock":
-		ctx = "在庫 %d/%d" % [int(state.food_stock), state.food_cap()]
+	elif affects == "food_stock" or affects == "meal_stocks":
+		ctx = "料理 %d/%d（%s）" % [int(state.total_meal_stock()), state.meal_storage_capacity(),
+			_meal_summary(state)]
+		sign = "+"
+	elif affects == "vegetable_stock":
+		ctx = "野菜 %d/%d ｜ 汎用素材 %d/%d" % [
+			int(state.vegetable_stock), state.vegetable_cap(),
+			int(state.generic_ingredient_stock), state.generic_ingredient_cap()]
+		sign = "+"
+	elif affects == "generic_ingredient_stock":
+		ctx = "汎用素材 %d/%d" % [
+			int(state.generic_ingredient_stock), state.generic_ingredient_cap()]
+		sign = "+"
+	elif affects == "reputation":
+		ctx = "評判 %d" % state.reputation
 		sign = "+"
 	var detail := Label.new()
 	detail.add_theme_font_size_override("font_size", 12)
@@ -93,6 +98,13 @@ func _skill_detail(state: GameState, s: Dictionary) -> Control:
 		str(s.get("icon", "")), str(s.get("name", id)), lv, ctx, sign, eff, cd,
 		int(state.skill_xp(id)), int(_skills.xp_to_next(state, id))]
 	return detail
+
+func _meal_summary(state: GameState) -> String:
+	return "簡%d 家%d 定%d" % [
+		int(state.meal_stock("basic")),
+		int(state.meal_stock("standard")),
+		int(state.meal_stock("good")),
+	]
 
 func _header(text: String) -> void:
 	var l := Label.new()
@@ -103,7 +115,8 @@ func _header(text: String) -> void:
 
 # 作業モードのカード（トグル）。ButtonGroup で単一選択になり、別カードを押すと
 # 自動的に前の選択が外れる＝清掃などが自動オフになる。
-func _work_card(group: ButtonGroup, icon: String, name: String, selected: bool, cb: Callable) -> Button:
+func _work_card(group: ButtonGroup, icon: String, name: String, selected: bool, cb: Callable,
+		disabled: bool = false, reason: String = "") -> Button:
 	var card := Button.new()
 	card.toggle_mode = true
 	card.button_group = group
@@ -113,32 +126,10 @@ func _work_card(group: ButtonGroup, icon: String, name: String, selected: bool, 
 	card.text = "%s\n%s" % [icon, name]
 	card.add_theme_font_size_override("font_size", 13)
 	card.button_pressed = selected
+	card.disabled = disabled and not selected
+	card.tooltip_text = reason
 	card.pressed.connect(cb)
 	return card
-
-func _tool_row(state: GameState, t: Dictionary) -> Control:
-	var id: String = str(t.get("id", ""))
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
-	var cur := _tools.current_tier(state, id)
-	var name_lbl := Label.new()
-	name_lbl.add_theme_font_size_override("font_size", 12)
-	name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_lbl.text = "%s %s：%s（+%d）" % [str(t.get("icon", "")), str(t.get("name", id)),
-		str(cur.get("name", "")), int(cur.get("bonus", 0))]
-	row.add_child(name_lbl)
-	var btn := Button.new()
-	btn.focus_mode = Control.FOCUS_NONE
-	if _tools.is_maxed(state, id):
-		btn.text = "MAX"
-		btn.disabled = true
-	else:
-		var nt := _tools.next_tier(state, id)
-		btn.text = "▲%s 💰%d" % [str(nt.get("name", "")), _tools.next_cost(state, id)]
-		btn.disabled = not _tools.can_buy(state, id)
-		btn.pressed.connect(func(): buy_tool.emit(id))
-	row.add_child(btn)
-	return row
 
 func _hire_row(state: GameState, r: Dictionary) -> Control:
 	var role_id: String = str(r.get("role_id", ""))

@@ -18,7 +18,7 @@
     "name": "仕込み",
     "icon": "🍳",
     "target": "stock",
-    "affects": "food_stock",
+    "affects": "meal_stocks",
     "base_effect": 3,
     "effect_per_level": 1,
     "cooldown_sec": 5,
@@ -26,5 +26,33 @@
     "xp_base": 10,
     "xp_growth": 1.35,
     "tier_req": 2
+  },
+  {
+    "id": "hospitality",
+    "name": "もてなし",
+    "icon": "☕",
+    "target": "stat",
+    "affects": "reputation",
+    "base_effect": 1,
+    "effect_per_level": 0,
+    "cooldown_sec": 8,
+    "xp_per_action": 3,
+    "xp_base": 12,
+    "xp_growth": 1.4,
+    "tier_req": 1
+  },
+  {
+    "id": "harvesting",
+    "name": "収穫",
+    "icon": "🥕",
+    "target": "stock",
+    "affects": "vegetable_stock",
+    "base_effect": 2,
+    "effect_per_level": 1,
+    "cooldown_sec": 5,
+    "xp_per_action": 4,
+    "xp_base": 10,
+    "xp_growth": 1.35,
+    "tier_req": 3
   }
 ]

@@ -26,7 +26,14 @@ func tier_req(role_id: String) -> int:
 	return int(get_role(role_id).get("tier_req", 1))
 
 func is_unlocked(state: GameState, role_id: String) -> bool:
-	return state.service_rank >= tier_req(role_id)
+	var r: Dictionary = get_role(role_id)
+	if r.is_empty():
+		return false
+	if state.service_rank < int(r.get("tier_req", 1)):
+		return false
+	if r.has("unlock") and not CondEval.eval_all(state, r.get("unlock", [])):
+		return false
+	return true
 
 # 現在解放済み（雇用可能な階層に達した）職の定義一覧
 func unlocked_roles(state: GameState) -> Array:

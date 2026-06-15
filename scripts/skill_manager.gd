@@ -44,6 +44,44 @@ func icon(id: String) -> String:
 func cooldown(id: String) -> float:
 	return float(get_def(id).get("cooldown_sec", 5))
 
+func is_work_available(state: GameState, id: String) -> bool:
+	var d: Dictionary = get_def(id)
+	if d.is_empty():
+		return false
+	var target: String = str(d.get("target", ""))
+	var affects: String = str(d.get("affects", ""))
+	if target == "meter" and affects == "dirtiness":
+		return state.dirtiness > 0.0
+	if target == "stock" and (affects == "food_stock" or affects == "meal_stocks"):
+		if state.service_rank >= 3 and state.vegetable_stock + state.generic_ingredient_stock <= 0.0:
+			return false
+		return state.total_meal_stock() < float(state.meal_storage_capacity())
+	if target == "stock" and affects == "vegetable_stock":
+		return state.vegetable_stock < float(state.vegetable_cap())
+	if target == "stock" and affects == "generic_ingredient_stock":
+		return state.generic_ingredient_stock < float(state.generic_ingredient_cap())
+	return true
+
+func unavailable_reason(state: GameState, id: String) -> String:
+	var d: Dictionary = get_def(id)
+	var target: String = str(d.get("target", ""))
+	var affects: String = str(d.get("affects", ""))
+	if target == "meter" and affects == "dirtiness" and state.dirtiness <= 0.0:
+		return "汚れがないので休憩できます"
+	if target == "stock" and (affects == "food_stock" or affects == "meal_stocks") \
+			and state.total_meal_stock() >= float(state.meal_storage_capacity()):
+		return "料理在庫が満タンです"
+	if target == "stock" and (affects == "food_stock" or affects == "meal_stocks") \
+			and state.service_rank >= 3 and state.vegetable_stock + state.generic_ingredient_stock <= 0.0:
+		return "食材がありません。収穫で野菜を集めましょう"
+	if target == "stock" and affects == "vegetable_stock" \
+			and state.vegetable_stock >= float(state.vegetable_cap()):
+		return "野菜在庫が満タンです"
+	if target == "stock" and affects == "generic_ingredient_stock" \
+			and state.generic_ingredient_stock >= float(state.generic_ingredient_cap()):
+		return "汎用素材が満タンです"
+	return ""
+
 # 手動1回あたりの効果量 = base + lv*per + プレイヤー用道具bonus
 func manual_effect(state: GameState, id: String) -> int:
 	var d: Dictionary = get_def(id)
@@ -82,6 +120,7 @@ func perform(state: GameState, id: String) -> Dictionary:
 		return {"effect": 0, "levels": 0, "leveled": false}
 	var eff: int = manual_effect(state, id)
 	_apply_effect(state, d, eff)
+	state.add_action_count(id)
 	var lv: int = add_xp(state, id, float(d.get("xp_per_action", 1)))
 	return {"effect": eff, "levels": lv, "leveled": lv > 0}
 
@@ -98,5 +137,11 @@ func apply_effect_for(state: GameState, skill_id: String, amount: int) -> void:
 	var affects: String = str(d.get("affects", ""))
 	if target == "meter" and affects == "dirtiness":
 		state.dirtiness = maxf(0.0, state.dirtiness - float(amount))
-	elif target == "stock" and affects == "food_stock":
-		state.food_stock = minf(float(state.food_cap()), state.food_stock + float(amount))
+	elif target == "stock" and (affects == "food_stock" or affects == "meal_stocks"):
+		state.cook_meals(float(amount))
+	elif target == "stock" and affects == "vegetable_stock":
+		state.add_vegetable_stock(float(amount))
+	elif target == "stock" and affects == "generic_ingredient_stock":
+		state.add_generic_ingredient_stock(float(amount))
+	elif target == "stat" and affects == "reputation":
+		state.reputation += amount

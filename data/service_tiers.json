@@ -2,18 +2,146 @@
   {
     "id": "lodging",
     "rank": 1,
-    "name": "素泊まり宿",
+    "name": "小さな素泊まり宿",
     "icon": "🏠",
-    "desc": "寝床だけを提供するつましい宿。"
+    "desc": "寝床だけを提供するつましい宿。清掃ともてなしを手で回し、汚れを抑えながら最初の客を迎える。",
+    "adds_skills": ["cleaning", "hospitality"],
+    "adds_meters": ["dirtiness"],
+    "adds_staff_roles": ["cleaner"],
+    "adds_guest_needs": ["bed"],
+    "adds_upgrades": ["room_plus", "bedding", "cleaning_gear"]
   },
   {
     "id": "meals",
     "rank": 2,
-    "name": "食事つきの宿",
+    "name": "食事つき宿",
     "icon": "🍽️",
-    "desc": "食事を出せるようになり、客単価が上がる。料理人を雇える。",
+    "desc": "厨房と食材保管庫を整え、手動の料理作業で食事を出せる宿。料理人の雇用は後続アンロックに回す。",
+    "adds_skills": ["cooking"],
+    "adds_meters": ["meal_stocks"],
+    "adds_staff_roles": [],
+    "adds_guest_needs": ["meal"],
+    "adds_upgrades": ["kitchen", "food_storage", "meal_storage"],
     "unlock": [
-      { "field": "total_guests", "op": ">=", "value": 5 }
+      { "field": "total_guests", "op": ">=", "value": 10 },
+      { "field": "reputation", "op": ">=", "value": 20 },
+      { "field": "skill.cleaning", "op": ">=", "value": 2 },
+      { "field": "upgrade.room_plus", "op": ">=", "value": 2 }
+    ]
+  },
+  {
+    "id": "farmstead",
+    "rank": 3,
+    "name": "畑つき宿",
+    "icon": "🌱",
+    "desc": "自給の始まり。畑と野菜在庫を持ち、収穫作業で厨房を支える。",
+    "adds_skills": ["harvesting"],
+    "adds_meters": ["vegetable_stock", "generic_ingredient_stock"],
+    "adds_staff_roles": [],
+    "adds_guest_needs": ["fresh_meal"],
+    "adds_upgrades": ["field", "vegetable_storage"],
+    "unlock": [
+      { "field": "total_guests", "op": ">=", "value": 40 },
+      { "field": "reputation", "op": ">=", "value": 60 },
+      { "field": "skill.cooking", "op": ">=", "value": 3 },
+      { "field": "action.cooking", "op": ">=", "value": 20 },
+      { "field": "upgrade.kitchen", "op": ">=", "value": 2 }
+    ]
+  },
+  {
+    "id": "trade_inn",
+    "rank": 4,
+    "name": "取引宿",
+    "icon": "🤝",
+    "desc": "販路開拓の段階。市場調査、商談、取引先、商人客を定義として解放する。",
+    "adds_skills": ["market_research", "negotiation"],
+    "adds_meters": ["trade_contacts"],
+    "adds_staff_roles": [],
+    "adds_guest_needs": ["trade"],
+    "adds_guest_types": ["merchant"],
+    "adds_upgrades": ["trading_desk"],
+    "unlock": [
+      { "field": "total_guests", "op": ">=", "value": 100 },
+      { "field": "reputation", "op": ">=", "value": 120 },
+      { "field": "skill.harvesting", "op": ">=", "value": 3 },
+      { "field": "action.harvesting", "op": ">=", "value": 40 },
+      { "field": "upgrade.field", "op": ">=", "value": 2 }
+    ]
+  },
+  {
+    "id": "signature_inn",
+    "rank": 5,
+    "name": "名物宿",
+    "icon": "🍱",
+    "desc": "名物料理、果実、魚介や特産品を扱い、置き土産と宿帳を強化する。",
+    "adds_skills": ["specialty_cooking"],
+    "adds_meters": ["fruit_stock", "seafood_stock", "specialty_stock"],
+    "adds_staff_roles": [],
+    "adds_guest_needs": ["specialty"],
+    "adds_upgrades": ["guestbook_counter", "souvenir_shelf"],
+    "unlock": [
+      { "field": "total_guests", "op": ">=", "value": 220 },
+      { "field": "reputation", "op": ">=", "value": 220 },
+      { "field": "skill.cooking", "op": ">=", "value": 5 },
+      { "field": "upgrade.kitchen", "op": ">=", "value": 4 },
+      { "field": "upgrade.food_storage", "op": ">=", "value": 3 }
+    ]
+  },
+  {
+    "id": "hot_spring",
+    "rank": 6,
+    "name": "温泉宿",
+    "icon": "♨️",
+    "desc": "温泉採掘プロジェクト、温泉浴場、湯守りを定義として解放する。",
+    "adds_skills": ["spring_development"],
+    "adds_meters": ["hot_spring_progress", "bath_cleanliness"],
+    "adds_staff_roles": ["bath_keeper"],
+    "adds_guest_needs": ["bath"],
+    "adds_upgrades": ["hot_spring_bath"],
+    "unlock": [
+      { "field": "total_guests", "op": ">=", "value": 400 },
+      { "field": "reputation", "op": ">=", "value": 360 },
+      { "field": "total_gold_earned", "op": ">=", "value": 15000 },
+      { "field": "upgrade.souvenir_shelf", "op": ">=", "value": 2 }
+    ]
+  },
+  {
+    "id": "resort",
+    "rank": 7,
+    "name": "リゾート宿",
+    "icon": "🌴",
+    "desc": "醸造、VIP客、警備、庭園、酒場、用心棒詰所を定義として解放する。",
+    "adds_skills": ["brewing", "security_work"],
+    "adds_meters": ["brew_stock", "vip_satisfaction", "security_risk"],
+    "adds_staff_roles": ["guard"],
+    "adds_guest_needs": ["vip_service"],
+    "adds_guest_types": ["vip"],
+    "adds_upgrades": ["garden", "bar", "guard_station"],
+    "unlock": [
+      { "field": "total_guests", "op": ">=", "value": 750 },
+      { "field": "reputation", "op": ">=", "value": 600 },
+      { "field": "skill.spring_development", "op": ">=", "value": 3 },
+      { "field": "upgrade.hot_spring_bath", "op": ">=", "value": 3 },
+      { "field": "security", "op": ">=", "value": 2 }
+    ]
+  },
+  {
+    "id": "grand_hotel",
+    "rank": 8,
+    "name": "大規模ホテル",
+    "icon": "🏨",
+    "desc": "部門長制、采配、設備管理、大型厨房、大型倉庫、管理事務所を定義として解放する。",
+    "adds_skills": ["management", "engineering"],
+    "adds_meters": ["department_load", "maintenance_backlog"],
+    "adds_staff_roles": ["department_head", "engineer"],
+    "adds_guest_needs": ["large_scale_service"],
+    "adds_upgrades": ["large_kitchen", "large_warehouse", "admin_office"],
+    "unlock": [
+      { "field": "total_guests", "op": ">=", "value": 1200 },
+      { "field": "reputation", "op": ">=", "value": 900 },
+      { "field": "skill.brewing", "op": ">=", "value": 4 },
+      { "field": "skill.security_work", "op": ">=", "value": 3 },
+      { "field": "upgrade.guard_station", "op": ">=", "value": 3 }
     ]
   }
 ]

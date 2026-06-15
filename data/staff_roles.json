@@ -26,7 +26,10 @@
     "hire_cost": 150,
     "cost_growth": 1.7,
     "reputation_req": 10,
-    "tier_req": 2,
+    "tier_req": 3,
+    "unlock": [
+      { "field": "action.cooking", "op": ">=", "value": 20 }
+    ],
     "xp_per_action": 3,
     "xp_base": 10,
     "xp_growth": 1.4

@@ -51,6 +51,58 @@ manual_effect = base_effect + skill_lv*effect_per_level + player_tool_bonus
 xp_to_next(lv) = round(xp_base * xp_growth^lv)
 ```
 アクティブ作業：選択中スキルを 5 秒ごとに1回実行＝汚れ −manual_effect、XP +4。
+汚れが 0 の場合、清掃は自動で休憩に戻る。
+
+## 宿Lv2〜Lv3・仕込み・収穫・もてなし（暫定）
+```
+宿Lv2 meals unlock = total_guests >= 10
+                    reputation >= 20
+                    skill.cleaning >= 2
+                    upgrade.room_plus >= 2
+
+宿Lv3 farmstead unlock = total_guests >= 40
+                        reputation >= 60
+                        skill.cooking >= 3
+                        action.cooking >= 20
+                        upgrade.kitchen >= 2
+
+cooking: base_effect=3, effect_per_level=1, cooldown_sec=5,
+         xp_per_action=4, xp_base=10, xp_growth=1.35
+         target=stock, affects=meal_stocks
+
+harvesting: base_effect=2, effect_per_level=1, cooldown_sec=5,
+            xp_per_action=4, xp_base=10, xp_growth=1.35
+            target=stock, affects=vegetable_stock
+
+hospitality: base_effect=1, effect_per_level=0, cooldown_sec=8,
+             xp_per_action=3, xp_base=12, xp_growth=1.4
+             target=stat, affects=reputation
+```
+料理は `meal_stocks`（basic/standard/good/luxury/specialty/vip）へ保存する。
+旧 `food_stock` は互換フィールドとして合計料理在庫と同期する。
+仕込みは料理在庫が `meal_storage_capacity()` に達している場合、自動で休憩に戻る。
+
+Lv2 は既存導線維持のため、仕込みだけで料理在庫を作れる。Lv3 以降は
+`vegetable_stock` または `generic_ingredient_stock` を消費して料理を作る。
+野菜も汎用素材も無い場合、仕込みは開始できない。汎用素材は basic/standard/good までの
+詰み防止補助で、完全自動補充はしない。
+
+料理ランクの仮解放：
+```
+kitchen Lv1 => basic
+kitchen Lv2 => standard
+kitchen Lv3+ => good
+cooking Lv が足りない場合は一段下がる
+```
+もてなしは本来「短時間バフ」候補だが、現時点ではゲーム内で押せる攻めの作業として
+reputation +1 の暫定効果にしている。
+
+食材保管：
+```
+meal_storage_capacity      = 12 + guest_capacity*4 + meal_storage Lv*8
+vegetable_cap              = 10 + food_storage Lv*8 + field Lv*6 + vegetable_storage Lv*10
+generic_ingredient_cap     = 8 + food_storage Lv*6
+```
 
 ## スタッフ（清掃係）— staff_roles.json
 ```
@@ -69,6 +121,7 @@ player_cleaning（手動効率↑）  tiers bonus [0,1,2,3,4]  cost [-,50,150,40
 staff_cleaning （自動効率↑）  tiers bonus [0,1,2,3,4]  cost [-,120,350,900,2200]
                 # スタッフ用は1個で全スタッフ共用
 ```
+UI 上は仕事ページから分離し、`道具` ページで購入する。
 
 ## 配置枠・チュートリアル
 ```

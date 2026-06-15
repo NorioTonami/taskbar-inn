@@ -115,7 +115,7 @@ func refresh(state: GameState, work_label: String) -> void:
 	else:
 		_dirt.modulate = Color(0.7, 1.0, 0.7)
 	if state.service_rank >= 2:
-		_food.text = "🍽️%d/%d" % [int(state.food_stock), state.food_cap()]
+		_food.text = "🍽️%d/%d" % [int(state.total_meal_stock()), state.meal_storage_capacity()]
 	else:
 		_food.text = ""
 	_work.text = ("🛠️ %s" % work_label) if work_label != "" else ""

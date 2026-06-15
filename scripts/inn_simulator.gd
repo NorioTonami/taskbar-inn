@@ -25,6 +25,7 @@ const RATE_THRESH_FRAC: float = 0.80
 const TUTORIAL_GUESTS: int = 5
 const FOOD_PER_GUEST: float = 1.0     # 食事1食あたりの在庫消費（②以降）
 const MEAL_PRICE_MULT: float = 1.5    # 食事を提供できた客の単価倍率
+const DOWNRANKED_MEAL_PRICE_MULT: float = 1.2
 
 var state: GameState
 var upgrades: UpgradeCatalog
@@ -98,10 +99,20 @@ func _do_active_work() -> void:
 		_work_timer = 0.0
 	if id == "" or not skills.has_skill(id):
 		return
+	if not skills.is_work_available(state, id):
+		state.active_work = ""
+		_last_work_id = ""
+		_work_timer = 0.0
+		return
 	_work_timer += TICK_SECONDS
 	var cd: float = skills.cooldown(id)
 	while _work_timer >= cd:
 		_work_timer -= cd
+		if not skills.is_work_available(state, id):
+			state.active_work = ""
+			_last_work_id = ""
+			_work_timer = 0.0
+			return
 		var res: Dictionary = skills.perform(state, id)
 		work_performed.emit(id, int(res.get("effect", 0)))
 		if bool(res.get("leveled", false)):
@@ -129,10 +140,18 @@ func _try_arrival() -> void:
 	state.total_guests += 1
 	state.guest_count = min(state.guest_count + 1, state.guest_capacity)
 	var price: int = _compute_price(type_def)
-	# 食事つき階層：在庫があれば1食提供して単価アップ
-	if state.service_rank >= 2 and state.food_stock >= FOOD_PER_GUEST:
-		state.food_stock -= FOOD_PER_GUEST
-		price = int(round(price * MEAL_PRICE_MULT))
+	# 食事つき階層：必要ランクに近い料理在庫を1食消費して単価アップ
+	if state.service_rank >= 2:
+		var meal: Dictionary = state.consume_meal_for(
+			str(type_def.get("required_meal_rank", "basic")), FOOD_PER_GUEST)
+		if bool(meal.get("served", false)):
+			if int(meal.get("rank_index", 0)) >= int(meal.get("required_index", 0)):
+				price = int(round(price * MEAL_PRICE_MULT))
+			else:
+				price = int(round(price * DOWNRANKED_MEAL_PRICE_MULT))
+				_rep_accumulator = maxf(-0.5, _rep_accumulator - 0.15)
+		else:
+			_rep_accumulator = maxf(-0.5, _rep_accumulator - 0.25)
 	state.gold += price
 	state.total_gold_earned += price
 	state.dirtiness = minf(float(state.dirty_cap()), state.dirtiness + DIRTY_PER_GUEST)
@@ -195,11 +214,11 @@ func apply_offline(elapsed_seconds: int) -> Dictionary:
 	var dirt_cleaned: float = staff.auto_per_sec_for(state, "cleaning") * sec
 	state.dirtiness = clampf(state.dirtiness + dirt_added - dirt_cleaned, 0.0, float(state.dirty_cap()))
 
-	# 食材在庫の収支（②以降）：料理人が作り、客が食べる
+	# 料理在庫の収支（②以降）：料理人が作り、客が合計在庫から食べる
 	if state.service_rank >= 2:
 		var cooked: float = staff.auto_per_sec_for(state, "cooking") * sec
-		state.food_stock = clampf(state.food_stock + cooked - arrivals * FOOD_PER_GUEST,
-			0.0, float(state.food_cap()))
+		state.add_meal_stock(state.highest_cookable_meal_rank(), cooked)
+		_consume_offline_meals(arrivals * FOOD_PER_GUEST)
 
 	state.gold += gold_gain
 	state.total_gold_earned += gold_gain
@@ -216,3 +235,14 @@ func apply_offline(elapsed_seconds: int) -> Dictionary:
 		"dirtiness": int(state.dirtiness),
 		"dirty_cap": state.dirty_cap(),
 	}
+
+func _consume_offline_meals(amount: float) -> void:
+	var remaining: float = amount
+	for rank in GameState.MEAL_RANKS:
+		if remaining <= 0.0:
+			return
+		var cur: float = state.meal_stock(rank)
+		var used: float = minf(cur, remaining)
+		state.meal_stocks[rank] = cur - used
+		remaining -= used
+	state.sync_food_stock_from_meals()

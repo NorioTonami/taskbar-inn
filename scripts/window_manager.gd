@@ -6,7 +6,7 @@ extends RefCounted
 # headless でも例外を出さないよう防御的に扱う。
 
 const COMPACT_SIZE := Vector2i(420, 64)
-const EXPANDED_SIZE := Vector2i(900, 680)
+const EXPANDED_SIZE := Vector2i(1080, 680)
 const DIALOG_SIZE := Vector2i(440, 250)
 const SCREEN_MARGIN := 12
 

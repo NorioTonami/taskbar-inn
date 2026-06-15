@@ -320,6 +320,7 @@ func _build_dev_overlay() -> void:
 	dev_overlay.add_rep.connect(func(n): state.reputation += n; _refresh())
 	dev_overlay.set_dirty.connect(_on_dev_set_dirty)
 	dev_overlay.set_food.connect(_on_dev_set_food)
+	dev_overlay.add_generic_ingredients.connect(_on_dev_add_generic_ingredients)
 	dev_overlay.force_guests.connect(_on_dev_force_guests)
 	dev_overlay.add_slot.connect(func(): state.placement_slots += 1; _refresh())
 	dev_overlay.rank_up.connect(_on_dev_rank_up)
@@ -331,7 +332,21 @@ func _on_dev_set_dirty(full: bool) -> void:
 	_refresh()
 
 func _on_dev_set_food(full: bool) -> void:
-	state.food_stock = float(state.food_cap()) if full else 0.0
+	state.ensure_meal_stocks()
+	for rank in GameState.MEAL_RANKS:
+		state.meal_stocks[rank] = 0.0
+	if full:
+		state.meal_stocks["basic"] = float(state.meal_storage_capacity())
+		state.vegetable_stock = float(state.vegetable_cap())
+		state.generic_ingredient_stock = float(state.generic_ingredient_cap())
+	else:
+		state.vegetable_stock = 0.0
+		state.generic_ingredient_stock = 0.0
+	state.sync_food_stock_from_meals()
+	_refresh()
+
+func _on_dev_add_generic_ingredients(n: int) -> void:
+	state.add_generic_ingredient_stock(float(n))
 	_refresh()
 
 func _on_dev_rank_up() -> void:

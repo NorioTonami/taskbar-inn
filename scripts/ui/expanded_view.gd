@@ -37,12 +37,9 @@ var _resource_bar: Label
 var _dev_status_label: Label
 var _inn_stage: Control
 var _stage_debug_button: Button
-var _right_pane: Control
 var _management_panel: PanelContainer
-var _overlay_toggle_button: Button
 var _dev_enabled: bool = false
 var _stage_debug_visible: bool = true
-var _management_visible: bool = true
 var _page_host: Control
 var _pages: Dictionary = {}
 var _sidebar_buttons: Dictionary = {}
@@ -101,10 +98,10 @@ func _ready() -> void:
 	_resource_bar.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	root.add_child(_resource_bar)
 
-	# --- サイドバー + ページ ---
+	# --- 上段: サイドバー + 管理UI ---
 	var body := HBoxContainer.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	body.custom_minimum_size = Vector2(0, 330)
+	body.custom_minimum_size = Vector2(0, 300)
 	body.add_theme_constant_override("separation", 8)
 	root.add_child(body)
 
@@ -129,74 +126,26 @@ func _ready() -> void:
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	sidebar.add_child(spacer)
 
-	_right_pane = Control.new()
-	_right_pane.name = "RightPaneInnOverlay"
-	_right_pane.clip_contents = true
-	_right_pane.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_right_pane.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	body.add_child(_right_pane)
+	_management_panel = PanelContainer.new()
+	_management_panel.name = "UpperManagementArea"
+	_management_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_management_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	body.add_child(_management_panel)
 
-	_inn_stage = InnVisualViewScript.new()
-	_inn_stage.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_inn_stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_right_pane.add_child(_inn_stage)
-	_set_stage_debug_visible(_stage_debug_visible)
+	var management_box := VBoxContainer.new()
+	management_box.add_theme_constant_override("separation", 6)
+	_management_panel.add_child(management_box)
 
 	_work_status = WorkStatusPanel.new()
 	_work_status.setup(_skills)
-	_work_status.custom_minimum_size = Vector2(300, 64)
-	_work_status.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	_work_status.offset_left = 12
-	_work_status.offset_top = 12
-	_work_status.offset_right = 330
-	_work_status.offset_bottom = 88
-	_right_pane.add_child(_work_status)
-
-	_stage_debug_button = Button.new()
-	_stage_debug_button.text = "ルート"
-	_stage_debug_button.tooltip_text = "DEVマーカー/固定ルートの表示"
-	_stage_debug_button.toggle_mode = true
-	_stage_debug_button.button_pressed = _stage_debug_visible
-	_stage_debug_button.focus_mode = Control.FOCUS_NONE
-	_stage_debug_button.add_theme_font_size_override("font_size", 11)
-	_stage_debug_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_stage_debug_button.offset_left = -170
-	_stage_debug_button.offset_top = 12
-	_stage_debug_button.offset_right = -92
-	_stage_debug_button.offset_bottom = 42
-	_stage_debug_button.pressed.connect(_toggle_stage_debug)
-	_right_pane.add_child(_stage_debug_button)
-
-	_overlay_toggle_button = Button.new()
-	_overlay_toggle_button.text = "UI"
-	_overlay_toggle_button.tooltip_text = "管理オーバーレイを表示/非表示"
-	_overlay_toggle_button.toggle_mode = true
-	_overlay_toggle_button.button_pressed = _management_visible
-	_overlay_toggle_button.focus_mode = Control.FOCUS_NONE
-	_overlay_toggle_button.add_theme_font_size_override("font_size", 11)
-	_overlay_toggle_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_overlay_toggle_button.offset_left = -84
-	_overlay_toggle_button.offset_top = 12
-	_overlay_toggle_button.offset_right = -12
-	_overlay_toggle_button.offset_bottom = 42
-	_overlay_toggle_button.pressed.connect(_toggle_management_overlay)
-	_right_pane.add_child(_overlay_toggle_button)
-
-	_management_panel = PanelContainer.new()
-	_management_panel.name = "ManagementOverlay"
-	_management_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
-	_management_panel.offset_left = -408
-	_management_panel.offset_top = 52
-	_management_panel.offset_right = -12
-	_management_panel.offset_bottom = -12
-	_management_panel.custom_minimum_size = Vector2(360, 0)
-	_right_pane.add_child(_management_panel)
+	_work_status.custom_minimum_size = Vector2(0, 62)
+	management_box.add_child(_work_status)
 
 	_page_host = Control.new()
 	_page_host.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_page_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_page_host.custom_minimum_size = Vector2(360, 0)
-	_management_panel.add_child(_page_host)
+	_page_host.custom_minimum_size = Vector2(0, 210)
+	management_box.add_child(_page_host)
 
 	# ホーム
 	var home_scroll := ScrollContainer.new()
@@ -276,6 +225,45 @@ func _ready() -> void:
 	ach.add_child(_badge_panel)
 	ach.add_child(_title_panel)
 	_add_page("achievements", ach)
+
+	# --- 下段: 常設宿屋ステージ ---
+	var stage_shell := PanelContainer.new()
+	stage_shell.name = "BottomInnStage"
+	stage_shell.custom_minimum_size = Vector2(0, 250)
+	stage_shell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	root.add_child(stage_shell)
+
+	var stage_box := VBoxContainer.new()
+	stage_box.add_theme_constant_override("separation", 4)
+	stage_shell.add_child(stage_box)
+
+	var stage_top := HBoxContainer.new()
+	stage_box.add_child(stage_top)
+	var stage_title := Label.new()
+	stage_title.text = "宿屋ステージ"
+	stage_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stage_title.add_theme_font_size_override("font_size", 12)
+	stage_title.modulate = Color(0.96, 0.86, 0.66)
+	stage_top.add_child(stage_title)
+
+	_stage_debug_button = Button.new()
+	_stage_debug_button.text = "ルート"
+	_stage_debug_button.tooltip_text = "DEVマーカー/固定ルートの表示"
+	_stage_debug_button.toggle_mode = true
+	_stage_debug_button.button_pressed = _stage_debug_visible
+	_stage_debug_button.focus_mode = Control.FOCUS_NONE
+	_stage_debug_button.add_theme_font_size_override("font_size", 11)
+	_stage_debug_button.pressed.connect(_toggle_stage_debug)
+	stage_top.add_child(_stage_debug_button)
+
+	_inn_stage = InnVisualViewScript.new()
+	_inn_stage.custom_minimum_size = Vector2(0, 214)
+	_inn_stage.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_inn_stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_inn_stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stage_box.add_child(_inn_stage)
+	_set_stage_debug_visible(_stage_debug_visible)
+
 	_show_page(_current_page)
 
 	# --- dev 専用ステータスバー（リリース時は生成しない） ---
@@ -364,11 +352,6 @@ func _add_page(page_id: String, page: Control) -> void:
 
 func _show_page(page_id: String) -> void:
 	_current_page = page_id
-	if _management_panel != null:
-		var wide_pages := ["log", "achievements"]
-		var width: int = 460 if wide_pages.has(page_id) else 396
-		_management_panel.offset_left = -width - 12
-		_management_panel.custom_minimum_size = Vector2(width - 36, 0)
 	for key in _pages.keys():
 		var page: Control = _pages[key]
 		page.visible = str(key) == page_id
@@ -387,18 +370,6 @@ func _set_stage_debug_visible(is_visible: bool) -> void:
 		_stage_debug_button.button_pressed = is_visible
 	if _inn_stage != null and _inn_stage.has_method("set_debug_markers_visible"):
 		_inn_stage.call("set_debug_markers_visible", is_visible)
-
-func _toggle_management_overlay() -> void:
-	if _overlay_toggle_button == null:
-		return
-	_set_management_overlay_visible(_overlay_toggle_button.button_pressed)
-
-func _set_management_overlay_visible(is_visible: bool) -> void:
-	_management_visible = is_visible
-	if _overlay_toggle_button != null:
-		_overlay_toggle_button.button_pressed = is_visible
-	if _management_panel != null:
-		_management_panel.visible = is_visible
 
 func _update_sidebar_for(state: GameState) -> void:
 	var kitchen_visible: bool = _is_kitchen_page_unlocked(state)

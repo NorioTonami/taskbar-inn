@@ -4,7 +4,10 @@ extends RefCounted
 # category でUI分類。unlock(条件配列) を満たすまで購入不可（特殊設備の実績ゲート）。
 # stat 系 effects は game_state へ直接加算する。
 
-const STAT_KEYS := ["comfort", "food", "cleanliness", "guest_capacity", "security", "rooms"]
+const STAT_KEYS := [
+	"comfort", "food", "cleanliness", "guest_capacity", "security", "rooms",
+	"placement_slots",
+]
 
 var upgrades: Array = []
 var _by_id: Dictionary = {}

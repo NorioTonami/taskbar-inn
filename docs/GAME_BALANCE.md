@@ -53,7 +53,33 @@ xp_to_next(lv) = round(xp_base * xp_growth^lv)
 アクティブ作業：選択中スキルを 5 秒ごとに1回実行＝汚れ −manual_effect、XP +4。
 汚れが 0 の場合、清掃は自動で休憩に戻る。
 
-## 宿Lv2〜Lv3・仕込み・収穫・もてなし（暫定）
+## 設備による手動クールダウン短縮
+道具は「1回あたりの効果量」を増やし、基礎設備は「1回あたりの所要時間」を短くする。
+スタッフ自動作業のクールダウンはこの補正の対象外。
+
+対応関係：
+```
+cleaning   -> cleaning_gear（清掃用具）
+cooking    -> kitchen（厨房）
+harvesting -> field（畑）
+```
+
+設備Lvごとの固定倍率：
+```
+Lv0  1.00
+Lv1  0.90
+Lv2  0.80
+Lv3  0.72
+Lv4  0.66
+Lv5+ 0.60
+```
+
+```
+effective_cooldown = skills.json.cooldown_sec * cooldown_multiplier
+```
+例：基礎5秒の作業は、対応設備Lv2で4.0秒、Lv5以上で3.0秒になる。
+
+## 宿Lv2〜Lv3・調理・収穫・もてなし（暫定）
 ```
 宿Lv2 meals unlock = total_guests >= 10
                     reputation >= 20
@@ -78,13 +104,13 @@ hospitality: base_effect=1, effect_per_level=0, cooldown_sec=8,
              xp_per_action=3, xp_base=12, xp_growth=1.4
              target=stat, affects=reputation
 ```
-料理は `meal_stocks`（basic/standard/good/luxury/specialty/vip）へ保存する。
-旧 `food_stock` は互換フィールドとして合計料理在庫と同期する。
-仕込みは料理在庫が `meal_storage_capacity()` に達している場合、自動で休憩に戻る。
+調理済みは `meal_stocks`（basic/standard/good/luxury/specialty/vip）へ保存する。
+旧 `food_stock` は互換フィールドとして合計調理済み在庫と同期する。
+調理は調理済みが `meal_storage_capacity()` に達している場合、自動で休憩に戻る。
 
-Lv2 は既存導線維持のため、仕込みだけで料理在庫を作れる。Lv3 以降は
-`vegetable_stock` または `generic_ingredient_stock` を消費して料理を作る。
-野菜も汎用素材も無い場合、仕込みは開始できない。汎用素材は basic/standard/good までの
+Lv2 から収穫/畑/野菜在庫を解放し、`vegetable_stock` または
+`generic_ingredient_stock`（UI表示は食材パック）を消費して調理済みを作る。
+野菜も食材パックも無い場合、調理は開始できない。食材パックは basic/standard/good までの
 詰み防止補助で、完全自動補充はしない。
 
 料理ランクの仮解放：
@@ -103,6 +129,7 @@ meal_storage_capacity      = 12 + guest_capacity*4 + meal_storage Lv*8
 vegetable_cap              = 10 + food_storage Lv*8 + field Lv*6 + vegetable_storage Lv*10
 generic_ingredient_cap     = 8 + food_storage Lv*6
 ```
+Lv3 は収穫の初解放ではなく、自給体制の拡張・安定化、農夫/自動収穫の前段階として扱う。
 
 ## スタッフ（清掃係）— staff_roles.json
 ```
@@ -126,8 +153,8 @@ UI 上は仕事ページから分離し、`道具` ページで購入する。
 ## 配置枠・チュートリアル
 ```
 placement_slots 初期 = 0
-TUTORIAL_GUESTS = 5  → 累計5人宿泊で placement_slots +1（最初の雇用解放）
-以後の枠拡張は設備/評判で（B）
+TUTORIAL_GUESTS = 5  → 累計5人宿泊でスタッフ詰め所が設備に解放
+スタッフ詰め所購入で placement_slots +1。以後の枠拡張も設備/評判で行う
 ```
 
 ## オフライン集計（apply_offline）

@@ -1,7 +1,7 @@
 class_name ToolPanel
 extends VBoxContainer
 # tool_panel.gd — 道具投資ページ。
-# 手動作業と奉公人自動化に効く道具を、仕事タブから独立して一覧表示する。
+# 手動作業とスタッフ自動化に効く道具を、仕事タブから独立して一覧表示する。
 # 解放済みスキルに紐づく道具だけ購入可能にする。
 
 signal buy_tool(id: String)

@@ -15,7 +15,7 @@
   },
   {
     "id": "cooking",
-    "name": "仕込み",
+    "name": "調理",
     "icon": "🍳",
     "target": "stock",
     "affects": "meal_stocks",
@@ -53,6 +53,6 @@
     "xp_per_action": 4,
     "xp_base": 10,
     "xp_growth": 1.35,
-    "tier_req": 3
+    "tier_req": 2
   }
 ]

@@ -35,3 +35,28 @@
 2. 店員1人、客1人の最小スプライトセットを作る。
 3. `scripts/ui/inn_visual_view.gd` 相当の仮表示ノードで、背景・座席・ベッド・入口座標を確認する。
 4. ランプ光と吹き出しを仮実装し、生活感の最小演出を検証する。
+
+## Visual MVP Step 1 実装メモ
+
+2026-06-15 に `scripts/ui/inn_visual_view.gd` を追加し、Home 画面へ「宿屋ビジュアルプレビュー」として表示する導線を作った。
+
+- 背景画像の想定パスは `assets/visual/backgrounds/inn_room/inn_room_lv01_base.png`。
+- 背景画像がない場合は、16:9 の `Inn Room Lv01 Placeholder` を描画する。
+- 仮マーカーは `Entrance / Hall 01 / Hall 02 / Seat 01 / Seat 02 / Bed 01`。
+- 固定ルートは `entrance_to_seat_01` と `seat_01_to_bed_01`。
+- マーカー座標は `scripts/ui/inn_visual_view.gd` の `MARKERS`、ルートは `ROUTES` を調整する。
+- 将来のキャラ移動用に `get_marker_position(marker_name)` と `get_route(route_name)` を用意した。
+
+この段階ではキャラクター表示、歩行アニメ、家具/小物の個別PNG化、背景生成は未実装。
+
+## Visual MVP Step 1.5 実装メモ
+
+2026-06-16 に、宿屋ビューを Home 内の小さなプレビューから Expanded 画面内の常設ステージへ変更した。
+
+- `ExpandedView` は `左ナビ / 宿屋ステージ / 管理パネル` の3カラム試作レイアウトになった。
+- `InnVisualView` はタブ切り替えで作り直されず、Expanded 画面内に残り続ける。
+- Home/仕事/厨房/設備/スタッフ/道具/ログ/実績は、右側の管理パネル内で切り替える。
+- DEVマーカーと固定ルートはステージ右上の `ルート` ボタンで ON/OFF できる。
+- 次にキャラ往復移動を入れる場合は、`scripts/ui/inn_visual_view.gd` の `get_route()` と `start_preview_patrol()` を入口にする。
+
+この段階でもキャラクター表示、歩行アニメ、下部ナビ化、管理UIの完成デザイン化は未実装。

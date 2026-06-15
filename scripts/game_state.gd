@@ -7,7 +7,7 @@ extends RefCounted
 # 汚れメーターの上限（規模で増える）
 const DIRTY_CAP_BASE: int = 30
 const DIRTY_CAP_PER_CAPACITY: int = 10
-# 料理在庫の互換上限（規模で増える）
+# 調理済み在庫の互換上限（規模で増える）
 const FOOD_CAP_BASE: int = 15
 const FOOD_CAP_PER_CAPACITY: int = 5
 const MEAL_STORAGE_BASE: int = 12
@@ -44,8 +44,8 @@ var guest_capacity: int = 2
 
 var dirtiness: float = 0.0                # 0 .. dirty_cap()
 var food_stock: float = 0.0               # 旧互換: meal_stocks 合計と同期する
-var vegetable_stock: float = 0.0          # Lv3: 収穫で得る未調理食材
-var generic_ingredient_stock: float = 0.0 # Lv3: 詰み防止用の汎用素材
+var vegetable_stock: float = 0.0          # Lv2: 収穫で得る未調理食材
+var generic_ingredient_stock: float = 0.0 # Lv2: 詰み防止用の食材パック
 var meal_stocks: Dictionary = {           # meal rank:String -> cooked stock:float
 	"basic": 0.0,
 	"standard": 0.0,
@@ -67,7 +67,7 @@ var tool_levels: Dictionary = {}           # tool_id:String -> level:int
 var skills: Dictionary = {}                # skill_id -> {"level":int, "xp":float}
 var action_counts: Dictionary = {}         # skill_id -> manual action count:int
 var staff: Array = []                       # [{role_id, name, level:int, xp:float, assigned:bool}]
-var placement_slots: int = 0               # 配置可能なスタッフ数（初期0 → チュートリアルで解放）
+var placement_slots: int = 0               # 配置可能なスタッフ数（スタッフ詰め所で増える）
 var active_work: String = ""               # 手動で訓練中のスキルid（""=なし）
 var tutorial_slot_unlocked: bool = false
 
@@ -183,7 +183,11 @@ func highest_cookable_meal_rank() -> String:
 
 func cook_meals(amount: float) -> float:
 	var rank: String = highest_cookable_meal_rank()
-	if service_rank < 3:
+	var room: float = maxf(0.0, float(meal_storage_capacity()) - total_meal_stock())
+	amount = minf(amount, room)
+	if amount <= 0.0:
+		return 0.0
+	if service_rank < 2:
 		return add_meal_stock(rank, amount)
 
 	var ingredient_need: float = amount

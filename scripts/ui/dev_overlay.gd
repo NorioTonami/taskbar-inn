@@ -45,9 +45,9 @@ func _ready() -> void:
 	box.add_child(d)
 	d.add_child(_btn("汚す", func(): set_dirty.emit(true)))
 	d.add_child(_btn("掃除", func(): set_dirty.emit(false)))
-	d.add_child(_btn("食材満", func(): set_food.emit(true)))
+	d.add_child(_btn("調理済み満", func(): set_food.emit(true)))
 	d.add_child(_btn("食材0", func(): set_food.emit(false)))
-	d.add_child(_btn("素材+20", func(): add_generic_ingredients.emit(20)))
+	d.add_child(_btn("食材パック+20", func(): add_generic_ingredients.emit(20)))
 
 	var s := HBoxContainer.new()
 	box.add_child(s)

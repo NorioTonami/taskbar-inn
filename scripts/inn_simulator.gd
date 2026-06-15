@@ -105,7 +105,7 @@ func _do_active_work() -> void:
 		_work_timer = 0.0
 		return
 	_work_timer += TICK_SECONDS
-	var cd: float = skills.cooldown(id)
+	var cd: float = skills.get_effective_cooldown(id, state)
 	while _work_timer >= cd:
 		_work_timer -= cd
 		if not skills.is_work_available(state, id):
@@ -123,7 +123,7 @@ func work_progress() -> float:
 	var id: String = state.active_work
 	if id == "" or not skills.has_skill(id):
 		return 0.0
-	var cd: float = maxf(0.1, skills.cooldown(id))
+	var cd: float = maxf(0.1, skills.get_effective_cooldown(id, state))
 	return clampf(_work_timer / cd, 0.0, 1.0)
 
 func _try_arrival() -> void:
@@ -140,7 +140,7 @@ func _try_arrival() -> void:
 	state.total_guests += 1
 	state.guest_count = min(state.guest_count + 1, state.guest_capacity)
 	var price: int = _compute_price(type_def)
-	# 食事つき階層：必要ランクに近い料理在庫を1食消費して単価アップ
+	# 食事つき階層：必要ランクに近い調理済みを1食消費して単価アップ
 	if state.service_rank >= 2:
 		var meal: Dictionary = state.consume_meal_for(
 			str(type_def.get("required_meal_rank", "basic")), FOOD_PER_GUEST)
@@ -179,8 +179,7 @@ func _try_event() -> void:
 func _check_tutorial() -> void:
 	if not state.tutorial_slot_unlocked and state.total_guests >= TUTORIAL_GUESTS:
 		state.tutorial_slot_unlocked = true
-		state.placement_slots += 1
-		state.add_log("奉公人の配置枠が解放されました！（清掃係を雇えます）")
+		state.add_log("スタッフ詰め所が設備に追加されました。建てるとスタッフを雇えます")
 		slot_unlocked.emit(state.placement_slots)
 
 func _check_awards() -> void:
@@ -214,10 +213,10 @@ func apply_offline(elapsed_seconds: int) -> Dictionary:
 	var dirt_cleaned: float = staff.auto_per_sec_for(state, "cleaning") * sec
 	state.dirtiness = clampf(state.dirtiness + dirt_added - dirt_cleaned, 0.0, float(state.dirty_cap()))
 
-	# 料理在庫の収支（②以降）：料理人が作り、客が合計在庫から食べる
+	# 調理済みの収支（②以降）：料理人が素材を消費して作り、客が合計在庫から食べる
 	if state.service_rank >= 2:
 		var cooked: float = staff.auto_per_sec_for(state, "cooking") * sec
-		state.add_meal_stock(state.highest_cookable_meal_rank(), cooked)
+		state.cook_meals(cooked)
 		_consume_offline_meals(arrivals * FOOD_PER_GUEST)
 
 	state.gold += gold_gain

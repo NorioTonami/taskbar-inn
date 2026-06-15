@@ -8,6 +8,13 @@ var skills: Array = []
 var _by_id: Dictionary = {}
 var _tools: ToolCatalog
 
+const COOLDOWN_UPGRADES := {
+	"cleaning": "cleaning_gear",
+	"cooking": "kitchen",
+	"harvesting": "field",
+}
+const COOLDOWN_MULTS := [1.0, 0.90, 0.80, 0.72, 0.66, 0.60]
+
 func _init(tools: ToolCatalog) -> void:
 	_tools = tools
 	skills = DataLoader.load_array("res://data/skills.json")
@@ -44,6 +51,35 @@ func icon(id: String) -> String:
 func cooldown(id: String) -> float:
 	return float(get_def(id).get("cooldown_sec", 5))
 
+func get_effective_cooldown(id: String, state: GameState) -> float:
+	return cooldown(id) * cooldown_multiplier_for(id, state)
+
+func cooldown_multiplier_for(id: String, state: GameState) -> float:
+	var upgrade_id: String = cooldown_upgrade_id(id)
+	if upgrade_id == "":
+		return 1.0
+	var lv: int = clampi(state.upgrade_level(upgrade_id), 0, COOLDOWN_MULTS.size() - 1)
+	return float(COOLDOWN_MULTS[lv])
+
+func cooldown_upgrade_id(id: String) -> String:
+	return str(COOLDOWN_UPGRADES.get(id, ""))
+
+func cooldown_upgrade_label(id: String) -> String:
+	var upgrade_id: String = cooldown_upgrade_id(id)
+	if upgrade_id == "cleaning_gear":
+		return "清掃用具"
+	if upgrade_id == "kitchen":
+		return "厨房"
+	if upgrade_id == "field":
+		return "畑"
+	return ""
+
+func cooldown_upgrade_level(id: String, state: GameState) -> int:
+	var upgrade_id: String = cooldown_upgrade_id(id)
+	if upgrade_id == "":
+		return 0
+	return state.upgrade_level(upgrade_id)
+
 func is_work_available(state: GameState, id: String) -> bool:
 	var d: Dictionary = get_def(id)
 	if d.is_empty():
@@ -53,7 +89,7 @@ func is_work_available(state: GameState, id: String) -> bool:
 	if target == "meter" and affects == "dirtiness":
 		return state.dirtiness > 0.0
 	if target == "stock" and (affects == "food_stock" or affects == "meal_stocks"):
-		if state.service_rank >= 3 and state.vegetable_stock + state.generic_ingredient_stock <= 0.0:
+		if state.service_rank >= 2 and state.vegetable_stock + state.generic_ingredient_stock <= 0.0:
 			return false
 		return state.total_meal_stock() < float(state.meal_storage_capacity())
 	if target == "stock" and affects == "vegetable_stock":
@@ -70,16 +106,16 @@ func unavailable_reason(state: GameState, id: String) -> String:
 		return "汚れがないので休憩できます"
 	if target == "stock" and (affects == "food_stock" or affects == "meal_stocks") \
 			and state.total_meal_stock() >= float(state.meal_storage_capacity()):
-		return "料理在庫が満タンです"
+		return "調理済みが満杯のため休憩中"
 	if target == "stock" and (affects == "food_stock" or affects == "meal_stocks") \
-			and state.service_rank >= 3 and state.vegetable_stock + state.generic_ingredient_stock <= 0.0:
-		return "食材がありません。収穫で野菜を集めましょう"
+			and state.service_rank >= 2 and state.vegetable_stock + state.generic_ingredient_stock <= 0.0:
+		return "野菜が不足しているため調理できません"
 	if target == "stock" and affects == "vegetable_stock" \
 			and state.vegetable_stock >= float(state.vegetable_cap()):
 		return "野菜在庫が満タンです"
 	if target == "stock" and affects == "generic_ingredient_stock" \
 			and state.generic_ingredient_stock >= float(state.generic_ingredient_cap()):
-		return "汎用素材が満タンです"
+		return "食材パックが満タンです"
 	return ""
 
 # 手動1回あたりの効果量 = base + lv*per + プレイヤー用道具bonus

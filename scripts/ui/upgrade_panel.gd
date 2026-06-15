@@ -7,8 +7,10 @@ signal buy_requested(id: String)
 
 const CATEGORY_LABEL := {
 	"base": "基礎設備",
+	"production": "生産設備",
 	"interior": "内装投資",
 	"facility": "特殊設備",
+	"special": "特殊設備",
 }
 
 func _ready() -> void:
@@ -18,7 +20,7 @@ func populate(catalog: UpgradeCatalog, state: GameState) -> void:
 	for c in get_children():
 		c.queue_free()
 
-	var order := ["base", "interior", "facility"]
+	var order := ["base", "production", "interior", "facility", "special"]
 	var seen := {}
 	for cat in order:
 		var rows := _rows_for_category(catalog, state, cat)

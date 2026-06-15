@@ -78,7 +78,7 @@
     "cost_growth": 1.65,
     "effects": {},
     "unlock": [
-      { "field": "service_rank", "op": ">=", "value": 3 }
+      { "field": "service_rank", "op": ">=", "value": 2 }
     ],
     "max_level": 8
   },
@@ -91,7 +91,7 @@
     "cost_growth": 1.6,
     "effects": {},
     "unlock": [
-      { "field": "service_rank", "op": ">=", "value": 3 }
+      { "field": "service_rank", "op": ">=", "value": 2 }
     ],
     "max_level": 8
   },
@@ -104,6 +104,19 @@
     "cost_growth": 1.45,
     "effects": { "cleanliness": 1 },
     "max_level": 10
+  },
+  {
+    "id": "staff_room",
+    "name": "スタッフ詰め所",
+    "icon": "👥",
+    "category": "base",
+    "cost": 120,
+    "cost_growth": 1.7,
+    "effects": { "placement_slots": 1 },
+    "unlock": [
+      { "field": "total_guests", "op": ">=", "value": 5 }
+    ],
+    "max_level": 6
   },
   {
     "id": "fireplace",

@@ -19,7 +19,7 @@
   },
   {
     "id": "first_staff",
-    "name": "はじめての奉公人",
+    "name": "はじめてのスタッフ",
     "icon": "🧽",
     "conditions": [{ "field": "staff_count", "op": ">=", "value": 1 }]
   },

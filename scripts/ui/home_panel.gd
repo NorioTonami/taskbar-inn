@@ -22,35 +22,51 @@ func populate(state: GameState) -> void:
 		c.queue_free()
 	if _catalog == null or _tiers == null:
 		return
+	_resource_bar(state)
 	_status_dashboard(state)
 	_notification_area(state)
 	_rank_section(state)
+	_latest_log(state)
+
+func _resource_bar(state: GameState) -> void:
+	if state.service_rank < 2:
+		return
+	var box := PanelContainer.new()
+	add_child(box)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	box.add_child(row)
+	row.add_child(_resource_label("調理済み", "%d/%d" % [
+		int(state.total_meal_stock()), state.meal_storage_capacity()]))
+	row.add_child(_resource_label("野菜", "%d/%d" % [
+		int(state.vegetable_stock), state.vegetable_cap()]))
+	row.add_child(_resource_label("食材パック", "%d/%d" % [
+		int(state.generic_ingredient_stock), state.generic_ingredient_cap()]))
 
 func _status_dashboard(state: GameState) -> void:
 	_header("宿の状況")
 	var grid := GridContainer.new()
-	grid.columns = 2
+	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", 8)
 	grid.add_theme_constant_override("v_separation", 6)
 	add_child(grid)
 	grid.add_child(_stat_card("売上", "%d G" % state.gold))
-	grid.add_child(_stat_card("累計売上", "%d G" % state.total_gold_earned))
 	grid.add_child(_stat_card("宿泊中", "%d / %d" % [state.guest_count, state.guest_capacity]))
-	grid.add_child(_stat_card("累計宿泊", "%d 人" % state.total_guests))
 	grid.add_child(_stat_card("評判", "%d" % state.reputation))
+	grid.add_child(_stat_card("累計売上", "%d G" % state.total_gold_earned))
+	grid.add_child(_stat_card("累計宿泊", "%d 人" % state.total_guests))
 	grid.add_child(_stat_card("汚れ", "%d / %d" % [int(state.dirtiness), state.dirty_cap()]))
 	if state.service_rank >= 2:
-		grid.add_child(_stat_card("料理在庫", "%d / %d" % [
+		grid.add_child(_stat_card("調理済み", "%d / %d" % [
 			int(state.total_meal_stock()), state.meal_storage_capacity()]))
-		grid.add_child(_stat_card("料理内訳", "簡%d 家%d 定%d" % [
+		grid.add_child(_stat_card("調理済み内訳", "簡%d 家%d 定%d" % [
 			int(state.meal_stock("basic")),
 			int(state.meal_stock("standard")),
 			int(state.meal_stock("good")),
 		]))
-	if state.service_rank >= 3:
 		grid.add_child(_stat_card("野菜在庫", "%d / %d" % [
 			int(state.vegetable_stock), state.vegetable_cap()]))
-		grid.add_child(_stat_card("汎用素材", "%d / %d" % [
+		grid.add_child(_stat_card("食材パック", "%d / %d" % [
 			int(state.generic_ingredient_stock), state.generic_ingredient_cap()]))
 
 func _notification_area(state: GameState) -> void:
@@ -98,20 +114,42 @@ func _rank_section(state: GameState) -> void:
 	desc.modulate = Color(1, 1, 1, 0.72)
 	desc.text = str(nxt.get("desc", ""))
 	inner.add_child(desc)
-	var btn := Button.new()
-	btn.focus_mode = Control.FOCUS_NONE
 	if _tiers.can_rank_up(state):
+		var btn := Button.new()
+		btn.focus_mode = Control.FOCUS_NONE
 		btn.text = "宿をアップデートする"
 		btn.pressed.connect(func(): rank_up.emit())
+		inner.add_child(btn)
 	else:
-		btn.text = "解放条件：%s" % _tiers.next_requirements_text(state)
-		btn.disabled = true
-		btn.clip_text = true
-	inner.add_child(btn)
+		var req := Label.new()
+		req.add_theme_font_size_override("font_size", 12)
+		req.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		req.modulate = Color(0.95, 0.82, 0.58)
+		req.text = "解放条件：%s" % _tiers.next_requirements_text(state)
+		inner.add_child(req)
+
+func _latest_log(state: GameState) -> void:
+	_header("最新ログ")
+	var log: Array = state.event_log
+	if log.is_empty():
+		var none := Label.new()
+		none.text = "まだログはありません。"
+		none.add_theme_font_size_override("font_size", 12)
+		none.modulate = Color(1, 1, 1, 0.55)
+		add_child(none)
+		return
+	var start: int = max(0, log.size() - 5)
+	for i in range(start, log.size()):
+		var l := Label.new()
+		l.text = "• %s" % str(log[i])
+		l.add_theme_font_size_override("font_size", 11)
+		l.clip_text = true
+		l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		add_child(l)
 
 func _stat_card(label: String, value: String) -> Control:
 	var box := PanelContainer.new()
-	box.custom_minimum_size = Vector2(110, 48)
+	box.custom_minimum_size = Vector2(110, 44)
 	var inner := VBoxContainer.new()
 	inner.add_theme_constant_override("separation", 0)
 	box.add_child(inner)
@@ -127,6 +165,15 @@ func _stat_card(label: String, value: String) -> Control:
 	v.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	inner.add_child(v)
 	return box
+
+func _resource_label(label: String, value: String) -> Control:
+	var l := Label.new()
+	l.text = "%s %s" % [label, value]
+	l.add_theme_font_size_override("font_size", 12)
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	l.clip_text = true
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	return l
 
 func _header(text: String) -> void:
 	var l := Label.new()

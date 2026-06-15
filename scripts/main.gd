@@ -220,13 +220,13 @@ func _on_award(def: Dictionary, prefix: String) -> void:
 	_show_toast("%s：%s %s" % [prefix, str(def.get("icon", "")), str(def.get("name", ""))])
 
 func _on_slot_unlocked(_slots: int) -> void:
-	_show_toast("配置枠が解放されました！\n「仕事」タブから清掃係を雇えます")
+	_show_toast("スタッフ詰め所が設備に追加されました！\n建てるとスタッフ管理が開きます")
 
 func _on_skill_leveled(skill_id: String, level: int) -> void:
 	_show_toast("%s Lv%d に上がりました" % [skills.display_name(skill_id), level])
 
 func _on_work_performed(skill_id: String, effect: int) -> void:
-	# 作業ストリップの進捗バーをリセット＆演出（expanded 表示時のみ意味を持つ）
+	# 作業状況パネルの進捗バーをリセット＆演出（expanded 表示時のみ意味を持つ）
 	expanded.on_work_performed(skill_id, effect)
 
 # オフライン進行の結果はクリックで閉じるモーダル。自動では消えない。

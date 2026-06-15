@@ -9,7 +9,7 @@
   },
   {
     "id": "well_staffed",
-    "name": "頼れる奉公人たち",
+    "name": "頼れるスタッフたち",
     "icon": "👥",
     "conditions": [
       { "field": "staff_count", "op": ">=", "value": 3 },

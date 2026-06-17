@@ -45,7 +45,7 @@ CP932 でバイト列を誤読し、`--headless` や `errorlevel`・godot 起動
    `set "PROJ=%~dp0"` の後に `if "%PROJ:~-1%"=="\" set "PROJ=%PROJ:~0,-1%"`。
 
 ### 4. 小窓が見つからない（マルチモニタ）
-compact は borderless・420x64・**プライマリモニタの右下（タスクバーのすぐ上）**に出る。
+compact は borderless・520x76・**プライマリモニタの右下（タスクバーのすぐ上）**に出る。
 マルチモニタ環境（仮想画面が負座標から始まる等）では別モニタを見ていて気づきにくい。
 位置・サイズは `scripts/window_manager.gd` の `COMPACT_SIZE` / `_place_bottom_right` で調整可。
 
@@ -62,6 +62,7 @@ application/run/max_fps=30
 
 ## 操作
 - 📋 ボタン：管理画面（expanded）を開く / 「✕ 閉じる」で小窓に戻る。
+- F2：compact / expanded を切り替える。compact 中は Enter でも expanded を開ける。
 - **ウィンドウ移動：ボタン以外の余白をドラッグ**（枠なしのため。`main.gd` の
   `_unhandled_input` で実装。ボタン/タブ/スクロールは消費するのでドラッグにならない）。
 - 終了：Alt+F4（終了時に自動セーブ）。

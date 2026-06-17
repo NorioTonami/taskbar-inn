@@ -1,7 +1,7 @@
 class_name CompactView
 extends PanelContainer
 # compact_view.gd — 常駐する小窓 UI（v0.3）。コードで生成。
-# 所持金・客数・評判・汚れメーター・現在の作業を表示し、客到着時に吹き出しを出す。
+# 所持金・汚れ・食事在庫・通知・現在の作業を表示し、客到着時に吹き出しを出す。
 # state のスナップショットを読むだけ。状態変更はしない。
 
 signal expand_requested
@@ -9,12 +9,8 @@ signal expand_requested
 const BUBBLE_SECONDS: float = 1.5
 
 var _icon: Label
-var _gold: Label
-var _guests: Label
-var _rep: Label
-var _dirt: Label
-var _food: Label
-var _work: Label
+var _status: Label
+var _notice: Label
 var _bubble: Label
 var _bubble_timer: float = 0.0
 
@@ -29,44 +25,39 @@ func _ready() -> void:
 	add_child(margin)
 
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 10)
 	row.alignment = BoxContainer.ALIGNMENT_BEGIN
 	margin.add_child(row)
 
 	_icon = _mk_label("🏠", 26)
+	_icon.custom_minimum_size = Vector2(34, 0)
 	row.add_child(_icon)
 
 	var col := VBoxContainer.new()
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	col.custom_minimum_size = Vector2(350, 0)
 	col.add_theme_constant_override("separation", 0)
 	row.add_child(col)
 
-	var stats := HBoxContainer.new()
-	stats.add_theme_constant_override("separation", 12)
-	col.add_child(stats)
-	_gold = _mk_label("💰0", 14)
-	_guests = _mk_label("🛏️0/0", 14)
-	_rep = _mk_label("⭐0", 14)
-	_dirt = _mk_label("🧹0", 14)
-	_food = _mk_label("", 14)
-	_food.modulate = Color(1.0, 0.85, 0.5)
-	stats.add_child(_gold)
-	stats.add_child(_guests)
-	stats.add_child(_rep)
-	stats.add_child(_dirt)
-	stats.add_child(_food)
+	_status = _mk_label("", 13)
+	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_status.custom_minimum_size = Vector2(0, 22)
+	col.add_child(_status)
 
 	var sub := HBoxContainer.new()
+	sub.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sub.add_theme_constant_override("separation", 8)
 	col.add_child(sub)
-	_work = _mk_label("", 11)
-	_work.modulate = Color(0.7, 0.9, 1.0)
-	_work.clip_text = true
-	_work.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	sub.add_child(_work)
+	_notice = _mk_label("", 11)
+	_notice.modulate = Color(0.95, 0.82, 0.48)
+	_notice.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sub.add_child(_notice)
 	_bubble = _mk_label("", 11)
 	_bubble.modulate = Color(1, 1, 1, 0.85)
-	_bubble.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_bubble.custom_minimum_size = Vector2(120, 0)
 	_bubble.clip_text = true
 	_bubble.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	sub.add_child(_bubble)
@@ -75,6 +66,8 @@ func _ready() -> void:
 	btn.text = "📋"
 	btn.tooltip_text = "管理画面を開く"
 	btn.focus_mode = Control.FOCUS_NONE
+	btn.custom_minimum_size = Vector2(52, 52)
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_END
 	btn.pressed.connect(func(): expand_requested.emit())
 	row.add_child(btn)
 
@@ -85,6 +78,8 @@ func _mk_label(text: String, size: int) -> Label:
 	l.text = text
 	l.add_theme_font_size_override("font_size", size)
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.clip_text = true
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	return l
 
 func _process(delta: float) -> void:
@@ -102,20 +97,21 @@ func show_bubble(text: String) -> void:
 func refresh(state: GameState, work_label: String) -> void:
 	if _icon == null:
 		return
-	_gold.text = "💰%d" % state.gold
-	_guests.text = "🛏️%d/%d" % [state.guest_count, state.guest_capacity]
-	_rep.text = "⭐%d" % state.reputation
-	var cap: int = state.dirty_cap()
-	_dirt.text = "🧹%d/%d" % [int(state.dirtiness), cap]
-	var frac: float = state.dirtiness / maxf(1.0, float(cap))
-	if frac >= 0.8:
-		_dirt.modulate = Color(1.0, 0.4, 0.4)
-	elif frac >= 0.6:
-		_dirt.modulate = Color(1.0, 0.8, 0.4)
-	else:
-		_dirt.modulate = Color(0.7, 1.0, 0.7)
+	var food_text: String = "-"
 	if state.service_rank >= 2:
-		_food.text = "🍳%d/%d" % [int(state.total_meal_stock()), state.meal_storage_capacity()]
-	else:
-		_food.text = ""
-	_work.text = ("🛠️ %s" % work_label) if work_label != "" else ""
+		food_text = "%d/%d" % [int(state.total_meal_stock()), state.meal_storage_capacity()]
+	_status.text = "G %d   評判 %d   客 %d/%d   汚れ %d/%d   食事 %s" % [
+		state.gold, state.reputation, state.guest_count, state.guest_capacity,
+		int(state.dirtiness), state.dirty_cap(), food_text]
+	_notice.text = _notice_text(state, work_label)
+
+func _notice_text(state: GameState, work_label: String) -> String:
+	var cap: int = state.dirty_cap()
+	var dirt_frac: float = state.dirtiness / maxf(1.0, float(cap))
+	if dirt_frac >= 0.8:
+		return "清掃が必要です"
+	if state.service_rank >= 2 and state.total_meal_stock() <= 0.0:
+		return "食事在庫が空です"
+	if work_label != "":
+		return "作業中: %s" % work_label
+	return "休憩中"

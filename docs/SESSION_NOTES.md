@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-06-16 追記 — compact 復旧UI / 新規チャット向けメモ
+
+### 実装済み
+- compact mini window が狭くなり、expanded 遷移ボタンだけが見える状態になったため緊急復旧。
+- `scripts/window_manager.gd`: `COMPACT_SIZE` を `520x76` に変更。
+- `scripts/ui/compact_view.gd`: 複数ラベルを詰め込む構成をやめ、1行ステータス + 1行通知 + 固定ボタンへ整理。
+  - 1行目: `G / 評判 / 客 / 汚れ / 食事`
+  - 2行目: `清掃が必要です` / `食事在庫が空です` / `作業中: ...` / `休憩中`
+  - 右端の `📋` ボタンは `52x52` 固定。
+- `scripts/main.gd`: 復旧導線として `F2` で compact/expanded toggle、compact 中は `Enter` でも expanded を開ける。
+  既存の `F9` dev toggle は維持。
+
+### 注意 / 次回UI作業
+- compact は完成体ではなく、当面は「確認可能状態を守る」ための実用表示。
+- compact に野菜/食材パックなどの詳細を増やす場合も、右端の expanded 遷移ボタンを消さないことを最優先にする。
+- GUI 目視で compact の文字詰まり、ボタン位置、通知優先度を確認する。
+
+---
+
 ## 2026-06-15 追記 — 設備短縮 / 厨房ページ
 
 ### 実装済み

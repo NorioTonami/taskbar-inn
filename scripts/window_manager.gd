@@ -5,7 +5,7 @@ extends RefCounted
 # expanded: compact の位置に追従して開く。画面中央より上なら下向き、下なら上向きに展開する。
 # headless でも例外を出さないよう防御的に扱う。
 
-const COMPACT_SIZE := Vector2i(420, 64)
+const COMPACT_SIZE := Vector2i(520, 76)
 const EXPANDED_SIZE := Vector2i(1180, 760)
 const DIALOG_SIZE := Vector2i(440, 250)
 const SCREEN_MARGIN := 12

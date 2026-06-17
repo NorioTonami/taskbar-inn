@@ -145,8 +145,16 @@ func _show_expanded() -> void:
 
 # --- 入力 ---
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F9:
-		_on_dev_toggle()
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F9:
+			_on_dev_toggle()
+		elif event.keycode == KEY_F2:
+			if _expanded_mode:
+				_show_compact()
+			else:
+				_show_expanded()
+		elif event.keycode == KEY_ENTER and not _expanded_mode:
+			_show_expanded()
 
 func _on_dev_toggle() -> void:
 	if dev_overlay != null:
